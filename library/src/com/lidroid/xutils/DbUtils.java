@@ -208,17 +208,19 @@ public class DbUtils {
         }
     }
 
-    public void save(Object entity) throws DbException {
+    public long save(Object entity) throws DbException {
+        long id=-1;
         try {
             beginTransaction();
 
             createTableIfNotExist(entity.getClass());
             execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(this, entity));
-
+            id=getLastAutoIncrementId(TableUtils.getTableName(entity.getClass()));
             setTransactionSuccessful();
         } finally {
             endTransaction();
         }
+        return id;
     }
 
     public void saveAll(List<?> entities) throws DbException {
